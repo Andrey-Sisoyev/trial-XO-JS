@@ -1,0 +1,27 @@
+.xo-cell {
+    height:50px;
+    width:50px;
+    text-align: center;
+}
+
+.xo-log {
+    display: block;
+    border: 1px;
+}
+
+.xo-log-err {
+    color:red;
+    font-weight:bold;
+    display: inherit;
+}
+.xo-log-ordinary {
+    color:black;
+    font-weight:bold;
+    display: inherit;
+}
+.xo-log-important {
+    color:blue;
+    font-weight:bold;
+    font-size:150%;
+    display: inherit;
+}
