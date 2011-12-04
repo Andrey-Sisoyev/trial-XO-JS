@@ -1,54 +1,46 @@
 jQuery(function($){
-
-    var data = [
-       {firstName: "Anatoly", lastName: "Ressin", salary: 0},
-       {firstName: "Vasily", lastName: "Pupkin", salary: 0},
-       {firstName: "Vasily I", lastName: "Pupkin", salary: 0},
-       {firstName: "Vasily II", lastName: "The Great", salary: 10000}
-    ];
-
-    var $t = $("#templates");
-    var tpl = {
-        personList : $t.find(".person-list.template"),
-        person: $t.find(".person.template")
+    var gms = new XO();
+    
+    jQuery("#btnNewGame").bind("click", function(){gms.newGame(1);});
+    gms.on("new-game", function(){
+        jQuery('.xo-cell').empty();
+        gameLog("xo-log-important", "New game started.");
+    });
+    
+    function gameCellId(xx,yy) {
+        return "xo_c_" + xx + "_" + yy;
     }
-
-    $t.find(".template").removeClass("template").remove();
-
-    function makePersonList(personList) {
-        var $e = tpl.personList.clone();
-        personList.forEach(function(p){
-            $e.append(makePerson(p));
-        })
-        //$e.append(personList.map(makePerson))
-        return $e; 
+    
+    function gameLog(style,message) {
+        jQuery('#gameStatus').prepend('<span class="' + style + '">' + message + '</span>');
     }
-
-    function makePerson(person){
-        var $e = tpl.person.clone();
-        $e.find('.firstName').text(person.firstName);
-        $e.find('.lastName').text(person.lastName);
-        $e.css({
-            backgroundColor: '#F0F0F0'
-        }).mouseenter(function(){
-            $e.stop().animate({
-                'width':'500',
-                'height':'50',
-                'backgroundColor':'red'
-            });    
-        }).mouseleave(function(){
-            $e.stop().animate({
-                'width':'200',
-                'height':'20',
-                'backgroundColor':'blue'
-            });
-        });
-        return $e;
+    
+    var x,y;
+    for(x = 0; x<3 ; x++) {       
+        for(y = 0; y<3 ; y++) {
+            (function(xx,yy) {
+                jQuery("#" + gameCellId(xx,yy)).bind("click", function() { gms.makeMove(xx,yy); });
+            })(x,y);
+        }
     }
-
-
-
-    $("body").append(makePersonList(data));
-
-
+    gms.on("move-made", function(xx,yy) {
+        var curPlayer = gms.currentPlayer();
+        var playerCode = 'x';
+        if(curPlayer === -1) playerCode = 'o';
+        
+        jQuery('#' + gameCellId(xx,yy)).append('<span>' + playerCode + "</span>");
+        gameLog("xo-log-ordinary", "Player '" + curPlayer + "' made move (" + xx + "," + yy + ")!");
+    });
+    
+    gms.on("illegal-move", function(xx,yy, msg) {
+        gameLog("xo-log-err", "Illegal move! " + msg);
+    });
+    
+    gms.on("game-over", function(winner) {
+        gameLog("xo-log-important", "Player '" + winner + "' won!");
+    });
+    
+    gms.on("switch-player", function(fromPlayer,toPlayer) {
+        gameLog("xo-log-ordinary", "Player's '" + toPlayer + "' turn.");
+    });
 })
