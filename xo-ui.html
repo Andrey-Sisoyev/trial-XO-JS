@@ -64,8 +64,8 @@
             gameLog("xo-log-ordinary", "Player '" + curPlayer + "' made move (" + xx + "," + yy + ")!");
         });
         
-        gms.on("illegal-move", function(xx,yy) {
-            gameLog("xo-log-err", "Illegal move!");
+        gms.on("illegal-move", function(xx,yy, msg) {
+            gameLog("xo-log-err", "Illegal move! " + msg);
         });
         
         gms.on("game-over", function(winner) {
